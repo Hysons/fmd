@@ -35,17 +35,23 @@ def estimate_period(signal):
     return period
 
 #fmd函数
+#模式数n和滤波器长度L设100
 def fmd(signal,n,L=100,max_iters=10):
+    #采用k个滤波器组，区间采用的5-10
     k = min(10, max(5,n))
+    # 汉宁窗口初始化FIR滤波器组
     filters = initialize_filters(L,k)
     modes = []
     signal = signal.values.flatten() if isinstance(signal,pd.DataFrame) else signal.flatten()
 
     for i in range(max_iters):
         for filter in filters:
+            #获得浦波信号(即分解模态)
             filtered_signal = lfilter(filter,1.0,signal)
             period = estimate_period(filtered_signal)
+            print(f'filter is {filter}')
             modes.append(filtered_signal)
+
 
         if len(modes)>= n:
             break
